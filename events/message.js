@@ -1,6 +1,3 @@
-const Discord = require("discord.js")
-const Enmap = require("enmap")
-const fs = require("fs")
 const defaultConfig = require("../res/defaultSettings.json")
 const events = require("events")
 const glob = require( 'glob' )
