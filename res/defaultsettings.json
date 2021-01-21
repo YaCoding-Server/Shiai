@@ -1,0 +1,9 @@
+{
+    "config":{
+        "prefix": "!",
+        "modLogChannel": "mod-log",
+        "announcementChannel": "announcements",
+        "modRole": "Moderator",
+        "adminRole": "Administrator"
+    }
+}
