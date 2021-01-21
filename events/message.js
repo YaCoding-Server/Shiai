@@ -1,36 +1,37 @@
-const defaultConfig = require("../res/defaultSettings.json")
-const events = require("events")
-const glob = require( 'glob' )
-const path = require( 'path' )
+const defaultConfig = require("../res/defaultSettings.json"),
+      events = require("events"),
+      glob = require( 'glob' ),
+      path = require( 'path' );
 
 module.exports = (client, msg) => {
     if(!msg.guild || msg.author.bot) return;
-    const guildConf = (client.settings.has(msg.guild.id))? client.settings.get(msg.guild.id):client.settings.ensure(msg.guild.id, defaultConfig.config);
+
+    const guildConf = client.settings.has(msg.guild.id)?
+            client.settings.get(msg.guild.id)
+        :
+            client.settings.ensure(msg.guild.id, defaultConfig.config);
+
     if(!msg.content.startsWith(guildConf.prefix)) return;
 
-    var ids = [], objects = {};
-    glob.sync( './commands/**/*.js' ).map(( file ) => {
-        const filename = file.split('/')[file.split('/').length-1].split('.')[0]
-        objects[filename] = require(path.resolve(file))
-        ids.push(filename)
-    });
+    const parts = msg.content.slice(guildConf.prefix.length).split(" "),
+          requires = {"client": client, "msg": msg, "parts":parts, "guildConf": guildConf, "helptext": helptext},
+          myemmiter = new events.EventEmitter();
 
-    const parts = msg.content.slice(guildConf.prefix.length).split(" ");
-    var helptext = []
-    const requires = {"client": client, "msg": msg, "parts":parts, "guildConf": guildConf, "helptext": helptext}
-
-    const myemmiter = new events.EventEmitter();
-
-    ids.map((id) => {
-        helptext.push({"id": id, "helptext": objects[id].helptext});
-        myemmiter.on(id, (msg) => {
-            var parameters = [];
-            objects[id].requires.map(part => {
-                parameters.push(requires[part])
-            })
-            new objects[id](...parameters);
-        })
-    })
+    let helptext = [];
+    
+    let p = glob.sync( './commands/**/*.js' );
+    for(let i = 0, filename, f; i != p.length; i++)
+        filename = p[i].split('/'),
+        f = require(path.resolve(p[i])),
+        filename = filename[filename.length-1].match(/[^\.]+/)[0],
+        helptext.push({"id": filename, "helptext": f.helptext}),
+        myemmiter.on(filename, (msg) => {
+            let parameters = [], l = f.requires;
+            for(let i = 0; i != l.length; i++)
+                parameters.push(requires[l[i]]);
+            new f(...parameters);
+        });
+    /*should be mildly more performant but you should test it cause im dumb*/
 
     myemmiter.emit(parts[0])
 }
