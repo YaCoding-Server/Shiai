@@ -13,8 +13,9 @@ module.exports = (client, msg) => {
 
     var ids = [], objects = {};
     glob.sync( './commands/**/*.js' ).map(( file ) => {
-        objects[file.split('/')[file.split('/').length-1].split('.')[0]] = require(path.resolve(file))
-        ids.push(file.split('/')[file.split('/').length-1].split('.')[0])
+        const filename = file.split('/')[file.split('/').length-1].split('.')[0]
+        objects[filename] = require(path.resolve(file))
+        ids.push(filename)
     });
 
     const parts = msg.content.slice(guildConf.prefix.length).split(" ");
