@@ -7,14 +7,19 @@ module.exports = class contestStart {
     constructor(client,msg,parts,guildConf,guildData) {
         permission.checkRole(msg, guildConf, guildConf.adminRole)
 
-        const announcementChannel = msg.guild.channels.cache.find(c => c.name === client.settings.get(msg.guild.id, "announcementChannel"))
+        const announcementChannel = msg.guild.channels.cache.find(c => c.name === client.settings.get(msg.guild.id, "announcementChannel")),
+              challangeChannel = msg.guild.channels.cache.find(c => c.name === client.settings.get(msg.guild.id, "challangeChannel"))
 
         const partss = parts.slice(1).join(" ").split("|")
         let enddate = new Date(Date.now());
-         enddate.setDate(enddate.getUTCDate() + parseInt(partss[5]))
+        enddate.setDate(enddate.getUTCDate() + parseInt(partss[5]))
+        //enddate.setMinutes(enddate.getMinutes() + parseInt(partss[5])) // Just for debugging
 
         if (!announcementChannel) {
             return msg.reply(`The channel ${client.settings.get(msg.guild.id, "announcementChannel")} was not found`)
+        }        
+        if (!challangeChannel) {
+            return msg.reply(`The channel ${client.settings.get(msg.guild.id, "challangeChannel")} was not found`)
         }
         let embed = new Discord.MessageEmbed()
             .setTitle(`Ya Coding Coding Contest #${partss[0]}: ${partss[1]}`)
@@ -26,5 +31,7 @@ module.exports = class contestStart {
 
         client.data.push(msg.guild.id,{"nr":partss[0],"title":partss[1],"ends": enddate},"events")
         announcementChannel.send(embed);
+        challangeChannel.permissionOverwrites.get(guild.id).delete();
+        challangeChannel.send(`-----Start of Challange #${partss[0]}: ${partss[1]}-----`)
     }
 }

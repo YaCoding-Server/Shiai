@@ -10,14 +10,31 @@ module.exports = client => {
         let datenow = new Date()
         datenow = Date.now()
         datenow = new Date(datenow).getTime()
-        client.data.keyArray().forEach(element => {
+        client.data.keyArray().forEach(element => {       
+            const guild = client.guilds.cache.get(element)
+            const challangeChannel = guild.channels.cache.find(c => c.name === client.settings.get(element, "challangeChannel"))
+            if (!challangeChannel) {
+                return;
+            }
             client.data.get(element).events.forEach(event => {
                 let enddate = new Date(event.ends).getTime()
                 if(enddate < datenow){
-                    //TODO - Implement handling of ending a event
+                    challangeChannel.send(`-----End of Challange #${event.nr}: ${event.title}-----`)
                     client.data.remove(element,(val)=>val.nr === event.nr,"events");
                 }
             });
+            if(client.data.get(element).events.length == 0) {
+                challangeChannel.overwritePermissions([
+                    {
+                        id: client.user.id,
+                        allow: ['SEND_MESSAGES'],
+                    },
+                    {
+                        id: guild.id,
+                        deny: ['SEND_MESSAGES'],
+                    }
+                ])
+            }
         });
     },10000)
   }

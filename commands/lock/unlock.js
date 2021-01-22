@@ -8,7 +8,7 @@ module.exports = class lock {
         permission.checkRole(msg, guildConf, guildConf.adminRole)
 
         if(!msg.channel.permissionOverwrites.get(msg.guild.id)) return;
-        msg.channel.lockPermissions();
+        msg.channel.permissionOverwrites.get(msg.guild.id).delete();
 
         let embed = new Embeded("Channel has been unlocked", "", 0x5eeb34)
         return msg.channel.send(embed.embed)

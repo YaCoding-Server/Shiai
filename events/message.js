@@ -15,7 +15,6 @@ module.exports = (client, msg) => {
           : client.data.ensure(msg.guild.id, defaultConfig.data);
 
     if(!msg.content.startsWith(guildConf.prefix)) return;
-    
     let helptext = [];
 
     const parts = msg.content.slice(guildConf.prefix.length).split(" "),
