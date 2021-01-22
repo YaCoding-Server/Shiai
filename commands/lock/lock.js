@@ -1,10 +1,15 @@
+const { SnowflakeUtil } = require("discord.js")
 const Embeded = require("../../util/embeds.js")
 const permission = require("../../util/permissions")
 
 module.exports = class lock {
-    static requires = ["client", "msg", "guildConf"]
-    static helptext = ""
-    constructor(client, msg, guildConf) {
+    static requires = ["client", "msg", "guildConf", "guildData"]
+    static helptext = "Prevents users from typing in the channel the command is executed in. Note: Unlocking resets the permission to the group default"
+    constructor(client, msg, guildConf, guildData) {
+
+        if(permission.getRole(msg, guildConf, guildConf.modRole) == undefined ||
+        permission.getRole(msg, guildConf, guildConf.adminRole) == undefined) return;
+
         permission.checkRole(msg, guildConf, guildConf.adminRole)
 
         msg.channel.overwritePermissions([

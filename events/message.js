@@ -6,17 +6,20 @@ const defaultConfig = require("../res/defaultSettings.json"),
 module.exports = (client, msg) => {
     if(!msg.guild || msg.author.bot) return;
 
-    const guildConf = client.settings.has(msg.guild.id)?
-            client.settings.get(msg.guild.id)
-        :
-            client.settings.ensure(msg.guild.id, defaultConfig.config);
+    const guildConf = client.settings.has(msg.guild.id) ?
+          client.settings.get(msg.guild.id) 
+          : client.settings.ensure(msg.guild.id, defaultConfig.config),
+
+          guildData = client.data.has(msg.author.id) ? 
+          client.data.get(msg.guild.id)
+          : client.data.ensure(msg.guild.id, defaultConfig.data);
 
     if(!msg.content.startsWith(guildConf.prefix)) return;
     
     let helptext = [];
 
     const parts = msg.content.slice(guildConf.prefix.length).split(" "),
-    requires = {"client": client, "msg": msg, "parts":parts, "guildConf": guildConf, "helptext": helptext},
+    requires = {"client": client, "msg": msg, "parts":parts, "guildConf": guildConf, "guildData": guildData, "helptext": helptext},
     myemmiter = new events.EventEmitter();
     
     let files = glob.sync( './commands/**/*.js' );
@@ -31,7 +34,6 @@ module.exports = (client, msg) => {
                 parameters.push(requires[l[i]]);
             new f(...parameters);
         });
-    /*should be mildly more performant but you should test it cause im dumb*/
 
     myemmiter.emit(parts[0])
 }

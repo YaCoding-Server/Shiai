@@ -13,6 +13,14 @@ client.settings = new Enmap({
     cloneLevel: 'deep'
 });
 
+client.data = new Enmap({
+    name: "data",
+    fetchAll: false,
+    autoFetch: false,
+    dataDir: "./res",
+    cloneLevel: 'deep'
+});
+
 fs.readdir("./events",(err, files) =>{
     files.forEach(file => {
         const eventHandler = require(`./events/${file}`)

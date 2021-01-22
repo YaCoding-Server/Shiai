@@ -4,6 +4,15 @@
         "modLogChannel": "mod-log",
         "announcementChannel": "announcements",
         "modRole": "Moderator",
-        "adminRole": "Administrator"
+        "adminRole": "Administrator",
+        "challangeChannel": "challange-submissions"
+    },
+    "data":{
+        "locked": [
+
+        ],
+        "events": [
+
+        ]
     }
 }
