@@ -12,17 +12,17 @@ module.exports = (client, msg) => {
             client.settings.ensure(msg.guild.id, defaultConfig.config);
 
     if(!msg.content.startsWith(guildConf.prefix)) return;
+    
+    let helptext = [];
 
     const parts = msg.content.slice(guildConf.prefix.length).split(" "),
-          requires = {"client": client, "msg": msg, "parts":parts, "guildConf": guildConf, "helptext": helptext},
-          myemmiter = new events.EventEmitter();
-
-    let helptext = [];
+    requires = {"client": client, "msg": msg, "parts":parts, "guildConf": guildConf, "helptext": helptext},
+    myemmiter = new events.EventEmitter();
     
-    let p = glob.sync( './commands/**/*.js' );
-    for(let i = 0, filename, f; i != p.length; i++)
-        filename = p[i].split('/'),
-        f = require(path.resolve(p[i])),
+    let files = glob.sync( './commands/**/*.js' );
+    for(let i = 0, filename, f; i != files.length; i++)
+        filename = files[i].split('/'),
+        f = require(path.resolve(files[i])),
         filename = filename[filename.length-1].match(/[^\.]+/)[0],
         helptext.push({"id": filename, "helptext": f.helptext}),
         myemmiter.on(filename, (msg) => {
